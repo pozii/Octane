@@ -66,7 +66,11 @@ public abstract class RecipeCacheMixin {
     private void octane$cachedApply(Map<Identifier, JsonElement> map, ResourceManager manager,
             Profiler profiler, CallbackInfo ci) {
         octane$applyStartNanos.set(System.nanoTime());
-        if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.cacheRecipes) {
+        boolean enabled = OctaneFabricMod.config() != null && OctaneFabricMod.config().boot.cacheRecipes;
+        OctaneFabricMod.LOGGER.info(
+                "[Octane] recipe apply start (manager={}, entries={}, cacheRecipes={}, cached={})",
+                System.identityHashCode(this), map.size(), enabled, octane$lastInput != null);
+        if (!enabled) {
             return;
         }
         synchronized (octane$LOCK) {
