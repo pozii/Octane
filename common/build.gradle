@@ -1,0 +1,10 @@
+// Octane :common — pure-Java module.
+// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
+//
+// RULE: no `net.minecraft.*`, no `net.fabricmc.*` imports in here, ever.
+// Everything loader- or version-specific lives behind the interfaces in
+// dev.pozii.octane.util and is implemented per-loader module.
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+}

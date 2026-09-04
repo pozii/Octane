@@ -1,0 +1,17 @@
+// Octane — Stonecutter migration hook (NOT APPLIED YET).
+// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
+//
+// The project layout is already Stonecutter-shaped:
+//   versions/1.20.1  -> active branch (wired into :fabric today)
+//   versions/1.21.x  -> skeleton, filled in during the v2.0 port
+//   neoforge-stub / forge-stub -> become real modules in v2.0
+//
+// Migration checklist (v2.0):
+//   1. Add `id 'dev.kikugie.stonecutter' version '<pinned>'` to settings.gradle.
+//   2. Move the `loom {}` block of fabric/build.gradle under stonecutter branches.
+//   3. Move dev.pozii.octane.fabric.adapter.* into versions/<mc>/ source sets.
+//   4. Keep :common loader-agnostic (it must never import net.minecraft.*).
+ext.octaneBranches = [
+    '1.20.1': [active: true,  loader: 'fabric'],
+    '1.21.x': [active: false, loader: 'fabric']
+]

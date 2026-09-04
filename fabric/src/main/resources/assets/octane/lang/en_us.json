@@ -1,0 +1,6 @@
+{
+  "octane.command.report": "Octane performance report",
+  "octane.command.report.done": "Octane report saved to octane-report.json",
+  "octane.command.report.failed": "Octane could not write the report, see the log",
+  "octane.log.initialized": "Octane initialized"
+}

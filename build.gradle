@@ -1,0 +1,21 @@
+// Octane — High-octane performance for your modpack.
+// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
+//
+// Shared defaults for every subproject. Loader-specific wiring
+// (Loom) lives in fabric/build.gradle; :common stays pure Java.
+
+subprojects {
+    apply plugin: 'java'
+
+    group = rootProject.property('mod_group_id')
+    version = rootProject.property('mod_version')
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 17
+    }
+}

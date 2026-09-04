@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "octane",
+  "version": "${version}",
+  "name": "Octane",
+  "description": "High-octane performance for your modpack.",
+  "authors": [
+    "pozii"
+  ],
+  "contact": {
+    "sources": "https://github.com/pozii/octane"
+  },
+  "license": "Apache-2.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.pozii.octane.fabric.OctaneFabricMod"
+    ],
+    "client": [
+      "dev.pozii.octane.fabric.OctaneFabricClient"
+    ]
+  },
+  "mixins": [
+    "octane.mixins.json",
+    "octane.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}

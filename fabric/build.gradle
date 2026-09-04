@@ -1,0 +1,46 @@
+// Octane :fabric — Fabric + Minecraft 1.20.1 module.
+// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    // NOTE: the plugins block requires a literal version; it is pinned here
+    // and mirrored in gradle.properties (loom_version) for documentation.
+    id 'fabric-loom' version '1.7.4'
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        'octane' {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+base {
+    archivesName = 'octane'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.property('minecraft_version')}"
+    mappings "net.fabricmc:yarn:${rootProject.property('yarn_mappings')}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.property('loader_version')}"
+    // v1 uses Fabric API (command + lifecycle events). Zero-dependency wiring
+    // without it is on the roadmap; nearly all 1.20.1 modpacks ship Fabric API.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.property('fabric_api_version')}"
+
+    // :common is pure Java (no Mojang names in its signatures), so it must NOT
+    // go through loom's mod-dependency scan (which needs a built jar at
+    // configuration time). Plain `implementation` for compile/run classpaths,
+    // loom `include` to jar-in-jar it for production.
+    implementation project(':common')
+    include project(':common')
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}

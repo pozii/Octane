@@ -1,0 +1,16 @@
+{
+  // Octane VS Code defaults: Gradle sync and the Java language server must
+  // run on JDK 17 (the project's toolchain), regardless of system JAVA_HOME.
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.19.10-hotspot",
+      "default": true
+    },
+    {
+      "name": "JavaSE-21",
+      "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot"
+    }
+  ],
+  "java.import.gradle.java.home": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.19.10-hotspot"
+}
