@@ -62,6 +62,35 @@ jobs:
       # gradle.properties so CI uses the setup-java toolchain.
       - name: Build
         run: ./gradlew :fabric:build -Dorg.gradle.java.home=$JAVA_HOME --console=plain
+      # Deterministic notes in "- subject (sha)" style. GitHub's generator
+      # is not used: it silently returns empty bodies on tag histories that
+      # were rewritten (see beta.3). chore noise is filtered like
+      # .github/release.yml prescribes; if everything is filtered, all
+      # commits are listed so the body is never empty.
+      - name: Build changelog
+        id: notes
+        run: |
+          PREV_TAG="$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || true)"
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="HEAD"
+            COMPARE="HEAD"
+          else
+            RANGE="$PREV_TAG..HEAD"
+            COMPARE="$PREV_TAG...${{ steps.meta.outputs.tag }}"
+          fi
+          LOG="$(git log "$RANGE" --pretty=format:'- %s (%h)' --no-merges | grep -v '^- chore' || true)"
+          if [ -z "$LOG" ]; then
+            LOG="$(git log "$RANGE" --pretty=format:'- %s (%h)' --no-merges)"
+          fi
+          {
+            echo 'OCTANE_CHANGELOG<<EOF'
+            echo "## What's Changed"
+            echo ''
+            echo "$LOG"
+            echo ''
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$COMPARE"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
       - name: Publish to GitHub
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -72,6 +101,7 @@ jobs:
           name: Octane ${{ steps.meta.outputs.mod_version }} for Minecraft ${{ steps.meta.outputs.mc_version }}
           version: ${{ steps.meta.outputs.tag }}
           version-type: ${{ steps.meta.outputs.version_type }}
+          changelog: ${{ steps.notes.outputs.OCTANE_CHANGELOG }}
           loaders: fabric
           game-versions: ${{ steps.meta.outputs.mc_version }}
           java: '17'
@@ -92,6 +122,7 @@ jobs:
           name: Octane ${{ steps.meta.outputs.mod_version }} for Minecraft ${{ steps.meta.outputs.mc_version }}
           version: ${{ steps.meta.outputs.tag }}
           version-type: ${{ steps.meta.outputs.version_type }}
+          changelog: ${{ steps.notes.outputs.OCTANE_CHANGELOG }}
           loaders: fabric
           game-versions: ${{ steps.meta.outputs.mc_version }}
           java: '17'
