@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import dev.pozii.octane.fabric.OctaneFabricMod;
 import dev.pozii.octane.profile.OctaneProfiler;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -40,9 +42,9 @@ import java.util.Map;
 @Mixin(RecipeManager.class)
 public abstract class RecipeCacheMixin {
     @Shadow
-    private Map recipes;
+    private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes;
     @Shadow
-    private Map recipesById;
+    private Map<Identifier, Recipe<?>> recipesById;
     @Shadow
     private boolean errored;
 
@@ -51,9 +53,9 @@ public abstract class RecipeCacheMixin {
     @Unique
     private static Map<Identifier, JsonElement> octane$lastInput;
     @Unique
-    private static Map octane$lastRecipes;
+    private static Map<RecipeType<?>, Map<Identifier, Recipe<?>>> octane$lastRecipes;
     @Unique
-    private static Map octane$lastRecipesById;
+    private static Map<Identifier, Recipe<?>> octane$lastRecipesById;
     @Unique
     private static boolean octane$lastErrored;
 
