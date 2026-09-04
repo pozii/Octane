@@ -79,6 +79,10 @@ jobs:
             fabric-api
             fabricloader
       - name: Publish to Modrinth
+        # Tolerated until the Modrinth project clears review: the step fails
+        # with 401 while the project is unapproved, which must not fail the
+        # whole release. Remove once the first Modrinth version lands.
+        continue-on-error: true
         if: steps.secrets.outputs.modrinth == 'true'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
