@@ -8,52 +8,74 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Trims positional sound spam beyond {@code client.soundCullDistance}.
+ * Both {@code play} overloads are covered — the single-arg variant is the
+ * one nearly every sound (including packet-driven ones) flows through.
  * Skipped sounds are counted for {@code /octane report}.
  *
  * <p>Safety: protected categories (master, music, records, weather, voice)
  * and relative (UI-anchored) sounds always pass; nearby gameplay cues are
- * untouched since only distant instances are culled. Delayed sounds queued
- * via {@code playNextTick} flow back through {@code play} and are covered.
+ * untouched since only distant instances are culled. The
+ * {@code playNextTick} queue (music/menu loops, protected categories
+ * anyway) stays out of scope.
  */
 @Mixin(SoundManager.class)
 public abstract class SoundGovernorMixin {
+    @Inject(
+        method = "play(Lnet/minecraft/client/sound/SoundInstance;)V",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void octane$governNow(SoundInstance sound, CallbackInfo ci) {
+        OctaneProfiler.recordSoundSeen();
+        if (octane$shouldCull(sound)) {
+            OctaneProfiler.recordSoundCull();
+            ci.cancel();
+        }
+    }
+
     @Inject(
         method = "play(Lnet/minecraft/client/sound/SoundInstance;I)V",
         at = @At("HEAD"),
         cancellable = true
     )
-    private void octane$govern(SoundInstance sound, int delay, CallbackInfo ci) {
+    private void octane$governDelayed(SoundInstance sound, int delay, CallbackInfo ci) {
         OctaneProfiler.recordSoundSeen();
+        if (octane$shouldCull(sound)) {
+            OctaneProfiler.recordSoundCull();
+            ci.cancel();
+        }
+    }
+
+    @Unique
+    private static boolean octane$shouldCull(SoundInstance sound) {
         if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().client.soundGovernor) {
-            return;
+            return false;
         }
         SoundCategory category = sound.getCategory();
         if (category == SoundCategory.MASTER || category == SoundCategory.MUSIC
                 || category == SoundCategory.RECORDS || category == SoundCategory.WEATHER
                 || category == SoundCategory.VOICE) {
-            return;
+            return false;
         }
         if (sound.isRelative()) {
-            return;
+            return false;
         }
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity player = client == null ? null : client.player;
         if (player == null) {
-            return;
+            return false;
         }
         double cull = OctaneFabricMod.config().client.soundCullDistance;
         double dx = sound.getX() - player.getX();
         double dy = sound.getY() - player.getY();
         double dz = sound.getZ() - player.getZ();
-        if (dx * dx + dy * dy + dz * dz > cull * cull) {
-            OctaneProfiler.recordSoundCull();
-            ci.cancel();
-        }
+        return dx * dx + dy * dy + dz * dz > cull * cull;
     }
 }
