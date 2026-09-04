@@ -33,7 +33,8 @@ public final class OctaneCommands {
                     ServerCommandSource source = context.getSource();
                     String json = OctaneProfiler.buildReport(
                             OctaneFabricMod.adapter().minecraftVersion(),
-                            OctaneFabricMod.platform().loaderName());
+                            OctaneFabricMod.platform().loaderName(),
+                            OctaneFabricMod.config());
 
                     Path out = OctaneFabricMod.platform().gameDir().resolve("octane-report.json");
                     try {

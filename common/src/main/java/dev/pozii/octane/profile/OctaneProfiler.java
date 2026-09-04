@@ -97,7 +97,8 @@ public final class OctaneProfiler {
     }
 
     /** Builds the report payload for {@code /octane report}. Pure data, no I/O. */
-    public static String buildReport(String minecraftVersion, String loaderName) {        long[] snapshot;
+    public static String buildReport(String minecraftVersion, String loaderName,
+            dev.pozii.octane.config.OctaneConfig config) {        long[] snapshot;
         int count;
         synchronized (tickNanos) {
             count = Math.min(tickCount, TICK_WINDOW);
@@ -138,6 +139,17 @@ public final class OctaneProfiler {
             }
         }
         root.add("reload", reload);
+
+        JsonObject effective = new JsonObject();
+        if (config != null) {
+            JsonObject boot = new JsonObject();
+            boot.addProperty("cacheRecipes", config.boot.cacheRecipes);
+            boot.addProperty("cacheSplashes", config.boot.cacheSplashes);
+            effective.add("boot", boot);
+        } else {
+            effective.addProperty("note", "config was null when the report ran");
+        }
+        root.add("config", effective);
 
         Runtime runtime = Runtime.getRuntime();
         JsonObject memory = new JsonObject();
