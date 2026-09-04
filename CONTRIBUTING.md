@@ -1,6 +1,6 @@
 # Contributing to Octane
 
-Thanks for helping make modpacks faster. This project is maintained by **pozii**
+Thanks for helping make modpacks faster. This project is maintained by its contributors
 and licensed under **Apache-2.0** — by contributing you agree your work ships
 under the same license.
 

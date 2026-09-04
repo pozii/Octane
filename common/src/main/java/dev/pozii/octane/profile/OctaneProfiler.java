@@ -1,4 +1,3 @@
-// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
 package dev.pozii.octane.profile;
 
 import com.google.gson.Gson;

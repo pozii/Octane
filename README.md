@@ -8,7 +8,7 @@
 [![Status](https://img.shields.io/badge/status-beta-orange.svg)](docs/BENCHMARKS.md)
 [![Contributors](https://contrib.rocks/image?repo=pozii/Octane)](https://github.com/pozii/Octane/graphs/contributors)
 
-Open-source Minecraft optimization core by **pozii**, licensed under
+Open-source Minecraft optimization core, licensed under
 **Apache-2.0**. Octane works *with* Sodium and Lithium, not against them:
 zero config, no gameplay changes — drop it into a modpack and forget it.
 
@@ -86,4 +86,4 @@ mixins, benchmarks required for perf claims).
 
 ## License
 
-[Apache-2.0](LICENSE) © 2026 pozii.
+[Apache-2.0](LICENSE).

@@ -1,5 +1,4 @@
 // Octane :fabric — Fabric + Minecraft 1.20.1 module.
-// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
 
 plugins {
     // NOTE: the plugins block requires a literal version; it is pinned here

@@ -1,4 +1,3 @@
-// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
 package dev.pozii.octane.fabric.command;
 
 import com.mojang.brigadier.CommandDispatcher;

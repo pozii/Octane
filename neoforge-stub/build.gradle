@@ -1,4 +1,3 @@
 // Octane :neoforge-stub — reserved module slot for the v2.0 NeoForge port.
-// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
 // Intentionally empty: it only reserves the Gradle module + package namespace
 // (dev.pozii.octane.neoforge) so the multi-loader layout is real from day one.

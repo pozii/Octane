@@ -1,5 +1,4 @@
 // Octane — Stonecutter migration hook (NOT APPLIED YET).
-// Copyright 2026 pozii. SPDX-License-Identifier: Apache-2.0
 //
 // The project layout is already Stonecutter-shaped:
 //   versions/1.20.1  -> active branch (wired into :fabric today)

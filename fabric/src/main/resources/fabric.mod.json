@@ -11,6 +11,7 @@
     "sources": "https://github.com/pozii/octane"
   },
   "license": "Apache-2.0",
+  "icon": "assets/octane/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
