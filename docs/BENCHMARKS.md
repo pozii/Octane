@@ -59,6 +59,14 @@ boot-time miss — that is expected, not a bug).
 Next: press F3+T twice and run `/reload` twice, then `/octane report` —
 both `cacheHits` counters should be > 0 with lower `lastMs`.
 
+Update 2 — M2 proven in a real modded game (beta.5, same machine/pack):
+`recipe-apply runs: 3, cacheHits: 2`. The snapshot survives across reloads
+and restores identical data; the earlier miss sessions were pack/state
+specific, and the miss-diff + entry logging added since then will identify
+any recurrence. Note the `setRecipes` invalidation was removed in beta.8:
+a hit requires structurally identical input by construction, so the sync
+path cannot poison the cache — the invalidation could only cause misses.
+
 Update: M1 proven in-game — `splash-prepare.cacheHits: 2` after two F3+T
 presses, zero errors. `recipe-apply` still shows the boot sample
 (`lastMs` identical to boot, `cacheHits: 0`), meaning `/reload` never
