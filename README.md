@@ -1,12 +1,9 @@
-# Octane
-
-**High-octane performance for your modpack.**
+![Octane — High-octane performance for your modpack.](assets/octane-banner.png)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Minecraft](https://img.shields.io/badge/minecraft-1.20.1-green.svg)](https://minecraft.net)
 [![Loader](https://img.shields.io/badge/loader-Fabric%20%C2%B7%200.16-yellow.svg)](https://fabricmc.net)
 [![Status](https://img.shields.io/badge/status-beta-orange.svg)](docs/BENCHMARKS.md)
-[![Contributors](https://contrib.rocks/image?repo=pozii/Octane)](https://github.com/pozii/Octane/graphs/contributors)
 
 Open-source Minecraft optimization core, licensed under
 **Apache-2.0**. Octane works *with* Sodium and Lithium, not against them:
@@ -83,6 +80,17 @@ docs/            benchmark protocol and run tables
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) first — especially the
 architecture rules (`:common` stays pure Java, no hardcoded strings, strict
 mixins, benchmarks required for perf claims).
+
+## Contributors
+
+Octane exists thanks to everyone who contributes code, testing, docs, and ideas.
+New contributors are also credited automatically in every GitHub Release notes.
+
+| | Name | Focus |
+|---|---|---|
+| <img src="https://github.com/pozii.png?size=100" width="100" alt="pozii"/> | **[pozii](https://github.com/pozii)** | Founder, architecture, core |
+
+*Your name here — see [CONTRIBUTING.md](CONTRIBUTING.md) to get started.*
 
 ## License
 
