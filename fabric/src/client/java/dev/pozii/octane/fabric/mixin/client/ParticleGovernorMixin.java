@@ -36,6 +36,10 @@ public abstract class ParticleGovernorMixin {
 
     @Unique
     private int octane$addsThisTick;
+    @Unique
+    private long octane$lastAlive;
+    @Unique
+    private int octane$throttleRoundRobin;
 
     @Inject(method = "tick()V", at = @At("HEAD"))
     private void octane$resetBudget(CallbackInfo ci) {
@@ -44,6 +48,7 @@ public abstract class ParticleGovernorMixin {
         for (Queue<Particle> queue : particles.values()) {
             alive += queue.size();
         }
+        octane$lastAlive = alive;
         OctaneProfiler.recordParticlesAlive(alive);
     }
 
@@ -77,6 +82,16 @@ public abstract class ParticleGovernorMixin {
             OctaneProfiler.recordParticleCull();
             cir.setReturnValue(null);
             return;
+        }
+        if (octane$lastAlive >= OctaneFabricMod.config().client.particleAliveThreshold) {
+            // Overflow valve: accept every 4th particle for uniform thinning.
+            // Allocation-free round-robin, no Random needed.
+            octane$throttleRoundRobin++;
+            if ((octane$throttleRoundRobin & 3) != 0) {
+                OctaneProfiler.recordParticleCull();
+                cir.setReturnValue(null);
+                return;
+            }
         }
         octane$addsThisTick++;
     }

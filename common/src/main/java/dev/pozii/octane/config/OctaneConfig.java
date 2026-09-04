@@ -48,6 +48,12 @@ public final class OctaneConfig {
         public int particleCullDistance = 128;
         /** Max particles accepted per tick; overflow is skipped. */
         public int particleCapPerTick = 8192;
+        /**
+         * When live particles exceed this, only every 4th new particle is
+         * accepted (uniform thinning). Defaults to just under vanilla's own
+         * 16384 cap, so Octane only engages where vanilla already overflows.
+         */
+        public int particleAliveThreshold = 16000;
         public boolean soundGovernor = true;
         /** Non-protected sounds beyond this distance (blocks) are skipped. */
         public int soundCullDistance = 64;
