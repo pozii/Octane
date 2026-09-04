@@ -3,7 +3,6 @@ package dev.pozii.octane.fabric.mixin;
 import com.google.gson.JsonElement;
 import dev.pozii.octane.fabric.OctaneFabricMod;
 import dev.pozii.octane.profile.OctaneProfiler;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -25,8 +24,11 @@ import java.util.Map;
  *
  * <p>Correctness: any added, removed or changed recipe flips
  * {@code Map.equals} and vanilla re-parses everything, refreshing the
- * snapshot. {@code setRecipes} (the client sync path, which carries no JSON)
- * invalidates the snapshot so synced and reloaded states can never mix.
+ * snapshot. {@code setRecipes} (the client sync path) is deliberately
+ * <em>not</em> wired to invalidate: it carries byte-identical data, and the
+ * server re-syncs recipes to connected players after every {@code /reload} —
+ * invalidating there would wipe the fresh snapshot and turn every reload
+ * into a miss on any server with players online (proven by testing).
  * Timings feed {@code /octane report} via {@link OctaneProfiler}.
  *
  * <p>Note: the snapshot is static because vanilla constructs a new
@@ -169,12 +171,4 @@ public abstract class RecipeCacheMixin {
         }
     }
 
-    @Inject(method = "setRecipes(Ljava/lang/Iterable;)V", at = @At("HEAD"))
-    private void octane$invalidateOnSync(Iterable<Recipe<?>> recipes, CallbackInfo ci) {
-        synchronized (octane$LOCK) {
-            octane$lastInput = null;
-            octane$lastRecipes = null;
-            octane$lastRecipesById = null;
-        }
-    }
 }
