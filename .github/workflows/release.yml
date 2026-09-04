@@ -4,17 +4,13 @@
 # The tag is validated against gradle.properties; mismatches fail fast.
 # Tags containing -alpha/-beta/-rc ship as prerelease (GitHub) + beta (Modrinth).
 # The Modrinth step is skipped when the MODRINTH_TOKEN secret is absent,
-# so GitHub-only releases always work.
+# so GitHub-only releases always work. Manual release = push a tag.
 name: Release
 
 on:
   push:
-    tags: ['v*-mc*']
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to release (must match v<mod_version>-mc<mc_version>)'
-        required: true
+    tags:
+      - 'v*-mc*'
 
 permissions:
   contents: write
@@ -26,15 +22,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.tag || github.ref }}
       - name: Resolve tag and versions
         id: meta
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG="${{ inputs.tag }}"
-          else
-            TAG="${GITHUB_REF_NAME}"
-          fi
+          TAG="${GITHUB_REF_NAME}"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           MOD_VERSION="$(grep '^mod_version=' gradle.properties | cut -d= -f2)"
           MC_VERSION="$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)"
@@ -53,6 +44,14 @@ jobs:
           echo "mc_version=${MC_VERSION}" >> "$GITHUB_OUTPUT"
           echo "version_type=${TYPE}" >> "$GITHUB_OUTPUT"
           echo "Tag ${TAG} -> ${TYPE}"
+      - name: Check secrets
+        id: secrets
+        run: |
+          if [ -n "${{ secrets.MODRINTH_TOKEN }}" ]; then
+            echo "modrinth=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "modrinth=false" >> "$GITHUB_OUTPUT"
+          fi
       - uses: gradle/actions/wrapper-validation@v4
       - uses: actions/setup-java@v4
         with:
@@ -79,7 +78,7 @@ jobs:
             fabric-api
             fabricloader
       - name: Publish to Modrinth
-        if: ${{ secrets.MODRINTH_TOKEN != '' }}
+        if: steps.secrets.outputs.modrinth == 'true'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: octane
