@@ -40,3 +40,21 @@ Vanilla content is small (hundreds of recipes), so the absolute delta is
 count — re-measure on a real modpack via `/octane report` after `/reload`.
 M1 splash cache skips one file open + ~500-line parse per reload; below
 wall-clock noise on vanilla, validated as reload-cache harness instead.
+
+## Real-machine run (modded 1.20.1, 2026-09-04, beta.3)
+
+Machine: i5-12450H + RTX 4060 Laptop, Java 17.0.20.1, loader 0.19.3, pack
+with Sodium/Lithium/FerriteCore/ImmediatelyFast/EntityCulling. Single sample
+after world open (no `/reload` or F3+T pressed yet, so both caches show the
+boot-time miss — that is expected, not a bug).
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| `recipe-apply` lastMs / cacheHits | 20.54 ms / 0 | boot parse on modded pack (~3x dev-vanilla: scales as predicted) |
+| `splash-prepare` lastMs / cacheHits | miss / 0 | no resource reload pressed yet |
+| server tick p50 / p95 / max | 6.55 / 14.34 / 18.97 ms | healthy, no Octane-induced spikes |
+| FPS standing still, 12 chunks | 900–1000 | rendering untouched by Octane (baseline) |
+| heap total / free | 1312 / 839 MB | — |
+
+Next: press F3+T twice and run `/reload` twice, then `/octane report` —
+both `cacheHits` counters should be > 0 with lower `lastMs`.
