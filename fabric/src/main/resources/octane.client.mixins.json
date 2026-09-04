@@ -6,6 +6,8 @@
   "refmap": "client-octane-refmap.json",
   "client": [
     "MinecraftClientBootMixin",
+    "ParticleGovernorMixin",
+    "SoundGovernorMixin",
     "SplashTextCacheMixin"
   ],
   "injectors": {

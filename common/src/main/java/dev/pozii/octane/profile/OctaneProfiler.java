@@ -30,6 +30,9 @@ public final class OctaneProfiler {
     private static final long[] reloadRuns = new long[RELOAD_PHASES];
     private static int reloadPhaseCount;
 
+    private static long particlesCulled;
+    private static long soundsCulled;
+
     private OctaneProfiler() {
     }
 
@@ -96,6 +99,18 @@ public final class OctaneProfiler {
         }
     }
 
+    /**
+     * Records a particle or sound skipped by the client governors.
+     * Counter only; call sites stay allocation-free.
+     */
+    public static void recordParticleCull() {
+        particlesCulled++;
+    }
+
+    public static void recordSoundCull() {
+        soundsCulled++;
+    }
+
     /** Builds the report payload for {@code /octane report}. Pure data, no I/O. */
     public static String buildReport(String minecraftVersion, String loaderName,
             dev.pozii.octane.config.OctaneConfig config) {        long[] snapshot;
@@ -150,6 +165,11 @@ public final class OctaneProfiler {
             effective.addProperty("note", "config was null when the report ran");
         }
         root.add("config", effective);
+
+        JsonObject governors = new JsonObject();
+        governors.addProperty("particlesCulled", particlesCulled);
+        governors.addProperty("soundsCulled", soundsCulled);
+        root.add("governors", governors);
 
         Runtime runtime = Runtime.getRuntime();
         JsonObject memory = new JsonObject();

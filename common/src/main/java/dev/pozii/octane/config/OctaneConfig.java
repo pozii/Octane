@@ -22,6 +22,7 @@ public final class OctaneConfig {
 
     public Boot boot = new Boot();
     public Ram ram = new Ram();
+    public Client client = new Client();
 
     public static final class Boot {
         public boolean cacheRecipes = true;
@@ -34,6 +35,22 @@ public final class OctaneConfig {
     public static final class Ram {
         public boolean dedupBlockStates = true;
         public boolean reduceAllocations = true;
+    }
+
+    /**
+     * Client-side governors. All visual/audio only — gameplay is never
+     * touched. Defaults are conservative: normal play looks and sounds
+     * identical, only pathological spam (farms, boss arenas) gets trimmed.
+     */
+    public static final class Client {
+        public boolean particleGovernor = true;
+        /** Particles beyond this distance (blocks) are skipped. */
+        public int particleCullDistance = 128;
+        /** Max particles accepted per tick; overflow is skipped. */
+        public int particleCapPerTick = 8192;
+        public boolean soundGovernor = true;
+        /** Non-protected sounds beyond this distance (blocks) are skipped. */
+        public int soundCullDistance = 64;
     }
 
     private OctaneConfig() {
@@ -50,6 +67,9 @@ public final class OctaneConfig {
                     }
                     if (loaded.ram == null) {
                         loaded.ram = new Ram();
+                    }
+                    if (loaded.client == null) {
+                        loaded.client = new Client();
                     }
                     return loaded;
                 }

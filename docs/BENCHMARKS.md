@@ -41,6 +41,19 @@ count — re-measure on a real modpack via `/octane report` after `/reload`.
 M1 splash cache skips one file open + ~500-line parse per reload; below
 wall-clock noise on vanilla, validated as reload-cache harness instead.
 
+## In-game governors (0.2.0-beta.1, client)
+
+Method: busy area (mob farm / boss arena / TNT), play 5 minutes with the
+governor on, then `/octane report` and read `governors.particlesCulled` and
+`governors.soundsCulled`. Compare 1% lows subjectively + tick p95. Then set
+`client.particleGovernor` / `client.soundGovernor` to false, repeat, compare.
+A correct run shows: no missing nearby cues, no crashes, counters > 0 only
+in spam scenarios, near-zero in normal play.
+
+| Build | Area | particlesCulled | soundsCulled | Notes |
+|-------|------|-----------------|--------------|-------|
+| 0.2.0-beta.1 | — | — | — | pending in-game test |
+
 ## Real-machine run (modded 1.20.1, 2026-09-04, beta.3)
 
 Machine: i5-12450H + RTX 4060 Laptop, Java 17.0.20.1, loader 0.19.3, pack
