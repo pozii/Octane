@@ -19,5 +19,7 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+      # -Dorg.gradle.java.home overrides the Windows-only pin in
+      # gradle.properties so CI uses the setup-java toolchain.
       - name: Build
-        run: ./gradlew :fabric:build --console=plain
+        run: ./gradlew :fabric:build -Dorg.gradle.java.home=$JAVA_HOME --console=plain
