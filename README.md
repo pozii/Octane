@@ -6,6 +6,7 @@
 [![Minecraft](https://img.shields.io/badge/minecraft-1.20.1-green.svg)](https://minecraft.net)
 [![Loader](https://img.shields.io/badge/loader-Fabric%20%C2%B7%200.16-yellow.svg)](https://fabricmc.net)
 [![Status](https://img.shields.io/badge/status-beta-orange.svg)](docs/BENCHMARKS.md)
+[![Contributors](https://contrib.rocks/image?repo=pozii/Octane)](https://github.com/pozii/Octane/graphs/contributors)
 
 Open-source Minecraft optimization core by **pozii**, licensed under
 **Apache-2.0**. Octane works *with* Sodium and Lithium, not against them:
