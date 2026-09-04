@@ -5,14 +5,19 @@ import dev.pozii.octane.profile.OctaneProfiler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * Trims particle spam that the player cannot meaningfully see: beyond
@@ -26,12 +31,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(ParticleManager.class)
 public abstract class ParticleGovernorMixin {
+    @Shadow
+    private Map<ParticleTextureSheet, Queue<Particle>> particles;
+
     @Unique
     private int octane$addsThisTick;
 
     @Inject(method = "tick()V", at = @At("HEAD"))
     private void octane$resetBudget(CallbackInfo ci) {
         octane$addsThisTick = 0;
+        long alive = 0;
+        for (Queue<Particle> queue : particles.values()) {
+            alive += queue.size();
+        }
+        OctaneProfiler.recordParticlesAlive(alive);
     }
 
     @Inject(
@@ -42,6 +55,7 @@ public abstract class ParticleGovernorMixin {
     private void octane$govern(ParticleEffect parameters, double x, double y, double z,
             double velocityX, double velocityY, double velocityZ,
             CallbackInfoReturnable<Particle> cir) {
+        OctaneProfiler.recordParticleSeen();
         if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().client.particleGovernor) {
             return;
         }

@@ -29,6 +29,7 @@ public abstract class SoundGovernorMixin {
         cancellable = true
     )
     private void octane$govern(SoundInstance sound, int delay, CallbackInfo ci) {
+        OctaneProfiler.recordSoundSeen();
         if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().client.soundGovernor) {
             return;
         }

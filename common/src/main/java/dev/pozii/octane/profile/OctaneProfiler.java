@@ -32,6 +32,9 @@ public final class OctaneProfiler {
 
     private static long particlesCulled;
     private static long soundsCulled;
+    private static long particlesSeen;
+    private static long soundsSeen;
+    private static long particlesAliveMax;
 
     private OctaneProfiler() {
     }
@@ -111,6 +114,21 @@ public final class OctaneProfiler {
         soundsCulled++;
     }
 
+    /** Total governor sightings (culled or not) plus peak live particles. */
+    public static void recordParticleSeen() {
+        particlesSeen++;
+    }
+
+    public static void recordSoundSeen() {
+        soundsSeen++;
+    }
+
+    public static void recordParticlesAlive(long alive) {
+        if (alive > particlesAliveMax) {
+            particlesAliveMax = alive;
+        }
+    }
+
     /** Builds the report payload for {@code /octane report}. Pure data, no I/O. */
     public static String buildReport(String minecraftVersion, String loaderName,
             dev.pozii.octane.config.OctaneConfig config) {        long[] snapshot;
@@ -169,6 +187,9 @@ public final class OctaneProfiler {
         JsonObject governors = new JsonObject();
         governors.addProperty("particlesCulled", particlesCulled);
         governors.addProperty("soundsCulled", soundsCulled);
+        governors.addProperty("particlesSeen", particlesSeen);
+        governors.addProperty("soundsSeen", soundsSeen);
+        governors.addProperty("particlesAliveMax", particlesAliveMax);
         root.add("governors", governors);
 
         Runtime runtime = Runtime.getRuntime();
