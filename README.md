@@ -81,17 +81,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) first — especially the
 architecture rules (`:common` stays pure Java, no hardcoded strings, strict
 mixins, benchmarks required for perf claims).
 
-## Contributors
-
-Octane exists thanks to everyone who contributes code, testing, docs, and ideas.
-New contributors are also credited automatically in every GitHub Release notes.
-
-| | Name | Focus |
-|---|---|---|
-| <img src="https://github.com/pozii.png?size=100" width="100" alt="pozii"/> | **[pozii](https://github.com/pozii)** | Founder, architecture, core |
-
-*Your name here — see [CONTRIBUTING.md](CONTRIBUTING.md) to get started.*
-
 ## License
 
 [Apache-2.0](LICENSE).

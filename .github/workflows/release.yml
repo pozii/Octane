@@ -72,7 +72,6 @@ jobs:
           name: Octane ${{ steps.meta.outputs.mod_version }} for Minecraft ${{ steps.meta.outputs.mc_version }}
           version: ${{ steps.meta.outputs.tag }}
           version-type: ${{ steps.meta.outputs.version_type }}
-          changelog-file: CHANGELOG.md
           loaders: fabric
           game-versions: ${{ steps.meta.outputs.mc_version }}
           java: '17'
@@ -89,7 +88,6 @@ jobs:
           name: Octane ${{ steps.meta.outputs.mod_version }} for Minecraft ${{ steps.meta.outputs.mc_version }}
           version: ${{ steps.meta.outputs.tag }}
           version-type: ${{ steps.meta.outputs.version_type }}
-          changelog-file: CHANGELOG.md
           loaders: fabric
           game-versions: ${{ steps.meta.outputs.mc_version }}
           java: '17'

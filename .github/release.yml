@@ -1,5 +1,6 @@
-# GitHub auto-generated release notes: categorize by label, skip chores.
-# GitHub appends a "New Contributors" section automatically.
+# GitHub auto-generated release notes: flat "What's Changed" list in the
+# style of "Subject (#PR) (@author)". Only noise is excluded; everything
+# else lands in one list, and GitHub appends New Contributors automatically.
 changelog:
   exclude:
     labels:
@@ -7,24 +8,3 @@ changelog:
       - skip-changelog
     authors:
       - dependabot
-  categories:
-    - title: Breaking Changes
-      labels:
-        - breaking
-    - title: New Features
-      labels:
-        - feat
-        - feature
-    - title: Performance
-      labels:
-        - perf
-    - title: Bug Fixes
-      labels:
-        - fix
-        - bug
-    - title: Documentation
-      labels:
-        - docs
-    - title: Other Changes
-      labels:
-        - "*"
