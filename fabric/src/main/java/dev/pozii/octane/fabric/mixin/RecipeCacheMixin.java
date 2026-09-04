@@ -78,7 +78,64 @@ public abstract class RecipeCacheMixin {
                 OctaneProfiler.recordReloadSample("recipe-apply", ms, true);
                 OctaneFabricMod.LOGGER.info("[Octane] recipe cache hit, skipped full re-parse ({} ms)", ms);
                 ci.cancel();
+            } else if (octane$lastInput != null) {
+                octane$logMissDiff(octane$lastInput, map);
             }
+        }
+    }
+
+    /**
+     * One-line diagnostic for cache misses: sizes, added/removed ids (first
+     * 5 each) and count of same-key entries whose JSON changed. Reloads are
+     * rare manual actions, so one INFO line per miss is acceptable.
+     */
+    @Unique
+    private static void octane$logMissDiff(Map<Identifier, JsonElement> oldMap,
+            Map<Identifier, JsonElement> fresh) {
+        try {
+            StringBuilder added = new StringBuilder();
+            StringBuilder removed = new StringBuilder();
+            StringBuilder changed = new StringBuilder();
+            int addedCount = 0;
+            int removedCount = 0;
+            int changedCount = 0;
+            for (Map.Entry<Identifier, JsonElement> entry : oldMap.entrySet()) {
+                JsonElement now = fresh.get(entry.getKey());
+                if (now == null) {
+                    if (removedCount < 5) {
+                        if (removedCount > 0) {
+                            removed.append(',');
+                        }
+                        removed.append(entry.getKey());
+                    }
+                    removedCount++;
+                } else if (!now.equals(entry.getValue())) {
+                    if (changedCount < 5) {
+                        if (changedCount > 0) {
+                            changed.append(',');
+                        }
+                        changed.append(entry.getKey());
+                    }
+                    changedCount++;
+                }
+            }
+            for (Identifier id : fresh.keySet()) {
+                if (!oldMap.containsKey(id)) {
+                    if (addedCount < 5) {
+                        if (addedCount > 0) {
+                            added.append(',');
+                        }
+                        added.append(id);
+                    }
+                    addedCount++;
+                }
+            }
+            OctaneFabricMod.LOGGER.info(
+                    "[Octane] recipe cache miss ({} -> {} entries, +{} [{}], -{} [{}], ~{} [{}])",
+                    oldMap.size(), fresh.size(), addedCount, added,
+                    removedCount, removed, changedCount, changed);
+        } catch (Throwable t) {
+            OctaneFabricMod.LOGGER.warn("[Octane] recipe diff failed", t);
         }
     }
 
