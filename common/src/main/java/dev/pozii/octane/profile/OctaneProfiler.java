@@ -23,6 +23,12 @@ public final class OctaneProfiler {
 
     private static final ThreadLocal<Long> tickStart = new ThreadLocal<>();
 
+    private static final int RELOAD_PHASES = 8;
+    private static final String[] reloadPhase = new String[RELOAD_PHASES];
+    private static final double[] reloadLastMs = new double[RELOAD_PHASES];
+    private static final long[] reloadHits = new long[RELOAD_PHASES];
+    private static int reloadPhaseCount;
+
     private OctaneProfiler() {
     }
 
@@ -55,16 +61,41 @@ public final class OctaneProfiler {
         }
     }
 
-    public static double millisSinceGameStart() {
-        if (gameStartNanos < 0) {
+    public static double millisSinceGameStart() {        if (gameStartNanos < 0) {
             return -1;
         }
         return (System.nanoTime() - gameStartNanos) / 1_000_000.0;
     }
 
+    /**
+     * Records how long a reload phase (e.g. {@code "recipe-apply"}) took and
+     * whether Octane served it from cache. Fixed-size, allocation-free.
+     */
+    public static void recordReloadSample(String phase, double millis, boolean cacheHit) {
+        synchronized (reloadPhase) {
+            int slot = -1;
+            for (int i = 0; i < reloadPhaseCount; i++) {
+                if (phase.equals(reloadPhase[i])) {
+                    slot = i;
+                    break;
+                }
+            }
+            if (slot < 0) {
+                if (reloadPhaseCount >= RELOAD_PHASES) {
+                    return;
+                }
+                slot = reloadPhaseCount++;
+                reloadPhase[slot] = phase;
+            }
+            reloadLastMs[slot] = millis;
+            if (cacheHit) {
+                reloadHits[slot]++;
+            }
+        }
+    }
+
     /** Builds the report payload for {@code /octane report}. Pure data, no I/O. */
-    public static String buildReport(String minecraftVersion, String loaderName) {
-        long[] snapshot;
+    public static String buildReport(String minecraftVersion, String loaderName) {        long[] snapshot;
         int count;
         synchronized (tickNanos) {
             count = Math.min(tickCount, TICK_WINDOW);
@@ -93,6 +124,17 @@ public final class OctaneProfiler {
             }
             root.add("recentTicksMs", last);
         }
+
+        JsonObject reload = new JsonObject();
+        synchronized (reloadPhase) {
+            for (int i = 0; i < reloadPhaseCount; i++) {
+                JsonObject sample = new JsonObject();
+                sample.addProperty("lastMs", reloadLastMs[i]);
+                sample.addProperty("cacheHits", reloadHits[i]);
+                reload.add(reloadPhase[i], sample);
+            }
+        }
+        root.add("reload", reload);
 
         Runtime runtime = Runtime.getRuntime();
         JsonObject memory = new JsonObject();

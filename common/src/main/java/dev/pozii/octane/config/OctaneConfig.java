@@ -25,6 +25,7 @@ public final class OctaneConfig {
 
     public static final class Boot {
         public boolean cacheRecipes = true;
+        public boolean cacheSplashes = true;
         public boolean skipRedundantBake = true;
         public boolean lazyLanguage = true;
         public boolean silenceMissingSounds = true;

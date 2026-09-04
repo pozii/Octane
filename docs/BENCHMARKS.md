@@ -23,3 +23,20 @@ No number ships without a run log attached here.
 |-------|---------|---------------|-----------------|-------|
 | 0.1.0 | vanilla | — | — | baseline pending |
 | 0.1.0 | octane  | — | — | skeleton, profiler only |
+
+## M1/M2 reload-cache runs (dev dedicated server, vanilla datapacks)
+
+Method: boot server, run `/reload` twice, then `/octane report`.
+`recipe-apply.lastMs` is the second (cached or re-parsed) apply;
+`cacheHits` counts snapshot restores. Measured 2026-09-04.
+
+| Config | recipe-apply lastMs | cacheHits | Notes |
+|--------|---------------------|-----------|-------|
+| `cacheRecipes: false` (vanilla path) | 6.68 ms | 0 | full re-deserialize |
+| `cacheRecipes: true` | 1.96 ms | 2 | snapshot restore, no errors |
+
+Vanilla content is small (hundreds of recipes), so the absolute delta is
+~4.7 ms (~3.4x on the no-op reload path). Cost scales linearly with recipe
+count — re-measure on a real modpack via `/octane report` after `/reload`.
+M1 splash cache skips one file open + ~500-line parse per reload; below
+wall-clock noise on vanilla, validated as reload-cache harness instead.

@@ -1,0 +1,118 @@
+package dev.pozii.octane.fabric.mixin;
+
+import com.google.gson.JsonElement;
+import dev.pozii.octane.fabric.OctaneFabricMod;
+import dev.pozii.octane.profile.OctaneProfiler;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
+
+/**
+ * No-op reload fast path for recipes. When the incoming data-pack map is
+ * structurally identical to the last applied one, the previously built
+ * (immutable) recipe maps are restored instead of re-deserializing every
+ * recipe — no registry lookups, no object churn, no repeated error logging.
+ *
+ * <p>Correctness: any added, removed or changed recipe flips
+ * {@code Map.equals} and vanilla re-parses everything, refreshing the
+ * snapshot. {@code setRecipes} (the client sync path, which carries no JSON)
+ * invalidates the snapshot so synced and reloaded states can never mix.
+ * Timings feed {@code /octane report} via {@link OctaneProfiler}.
+ *
+ * <p>Note: the snapshot is static because vanilla constructs a new
+ * {@code RecipeManager} inside {@code DataPackContents} on every reload —
+ * an instance field would never survive to the second reload. All access is
+ * guarded by {@code octane$LOCK} since server apply and client sync run on
+ * different threads.
+ */
+@Mixin(RecipeManager.class)
+public abstract class RecipeCacheMixin {
+    @Shadow
+    private Map recipes;
+    @Shadow
+    private Map recipesById;
+    @Shadow
+    private boolean errored;
+
+    @Unique
+    private static final Object octane$LOCK = new Object();
+    @Unique
+    private static Map<Identifier, JsonElement> octane$lastInput;
+    @Unique
+    private static Map octane$lastRecipes;
+    @Unique
+    private static Map octane$lastRecipesById;
+    @Unique
+    private static boolean octane$lastErrored;
+
+    @Unique
+    private static final ThreadLocal<Long> octane$applyStartNanos = new ThreadLocal<>();
+
+    @Inject(
+        method = "apply(Ljava/util/Map;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)V",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void octane$cachedApply(Map<Identifier, JsonElement> map, ResourceManager manager,
+            Profiler profiler, CallbackInfo ci) {
+        octane$applyStartNanos.set(System.nanoTime());
+        if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.cacheRecipes) {
+            return;
+        }
+        synchronized (octane$LOCK) {
+            if (octane$lastInput != null && octane$lastInput.equals(map)) {
+                recipes = octane$lastRecipes;
+                recipesById = octane$lastRecipesById;
+                errored = octane$lastErrored;
+                OctaneProfiler.recordReloadSample("recipe-apply",
+                        (System.nanoTime() - octane$applyStartNanos.get()) / 1_000_000.0, true);
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(
+        method = "apply(Ljava/util/Map;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)V",
+        at = @At("TAIL")
+    )
+    private void octane$snapshotApply(Map<Identifier, JsonElement> map, ResourceManager manager,
+            Profiler profiler, CallbackInfo ci) {
+        Long start = octane$applyStartNanos.get();
+        octane$applyStartNanos.remove();
+        if (start != null) {
+            OctaneProfiler.recordReloadSample("recipe-apply",
+                    (System.nanoTime() - start) / 1_000_000.0, false);
+        }
+        if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.cacheRecipes) {
+            synchronized (octane$LOCK) {
+                octane$lastInput = null;
+            }
+            return;
+        }
+        synchronized (octane$LOCK) {
+            octane$lastInput = map;
+            octane$lastRecipes = recipes;
+            octane$lastRecipesById = recipesById;
+            octane$lastErrored = errored;
+        }
+    }
+
+    @Inject(method = "setRecipes(Ljava/lang/Iterable;)V", at = @At("HEAD"))
+    private void octane$invalidateOnSync(Iterable<Recipe<?>> recipes, CallbackInfo ci) {
+        synchronized (octane$LOCK) {
+            octane$lastInput = null;
+            octane$lastRecipes = null;
+            octane$lastRecipesById = null;
+        }
+    }
+}

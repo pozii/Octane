@@ -4,7 +4,8 @@
   "package": "dev.pozii.octane.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MinecraftServerTickMixin"
+    "MinecraftServerTickMixin",
+    "RecipeCacheMixin"
   ],
   "injectors": {
     "defaultRequire": 1
