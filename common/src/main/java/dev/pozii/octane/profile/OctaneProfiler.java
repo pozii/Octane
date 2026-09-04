@@ -27,6 +27,7 @@ public final class OctaneProfiler {
     private static final String[] reloadPhase = new String[RELOAD_PHASES];
     private static final double[] reloadLastMs = new double[RELOAD_PHASES];
     private static final long[] reloadHits = new long[RELOAD_PHASES];
+    private static final long[] reloadRuns = new long[RELOAD_PHASES];
     private static int reloadPhaseCount;
 
     private OctaneProfiler() {
@@ -88,6 +89,7 @@ public final class OctaneProfiler {
                 reloadPhase[slot] = phase;
             }
             reloadLastMs[slot] = millis;
+            reloadRuns[slot]++;
             if (cacheHit) {
                 reloadHits[slot]++;
             }
@@ -130,6 +132,7 @@ public final class OctaneProfiler {
             for (int i = 0; i < reloadPhaseCount; i++) {
                 JsonObject sample = new JsonObject();
                 sample.addProperty("lastMs", reloadLastMs[i]);
+                sample.addProperty("runs", reloadRuns[i]);
                 sample.addProperty("cacheHits", reloadHits[i]);
                 reload.add(reloadPhase[i], sample);
             }

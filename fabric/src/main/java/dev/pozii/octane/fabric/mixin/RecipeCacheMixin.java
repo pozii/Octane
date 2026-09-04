@@ -74,8 +74,9 @@ public abstract class RecipeCacheMixin {
                 recipes = octane$lastRecipes;
                 recipesById = octane$lastRecipesById;
                 errored = octane$lastErrored;
-                OctaneProfiler.recordReloadSample("recipe-apply",
-                        (System.nanoTime() - octane$applyStartNanos.get()) / 1_000_000.0, true);
+                double ms = (System.nanoTime() - octane$applyStartNanos.get()) / 1_000_000.0;
+                OctaneProfiler.recordReloadSample("recipe-apply", ms, true);
+                OctaneFabricMod.LOGGER.info("[Octane] recipe cache hit, skipped full re-parse ({} ms)", ms);
                 ci.cancel();
             }
         }

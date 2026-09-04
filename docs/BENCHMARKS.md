@@ -58,3 +58,11 @@ boot-time miss — that is expected, not a bug).
 
 Next: press F3+T twice and run `/reload` twice, then `/octane report` —
 both `cacheHits` counters should be > 0 with lower `lastMs`.
+
+Update: M1 proven in-game — `splash-prepare.cacheHits: 2` after two F3+T
+presses, zero errors. `recipe-apply` still shows the boot sample
+(`lastMs` identical to boot, `cacheHits: 0`), meaning `/reload` never
+reached `RecipeManager.apply` on that session — most likely cheats off, so
+`/reload` was rejected. beta.4 adds per-phase `runs` counters plus an
+`[Octane] recipe cache hit` log line so the next test distinguishes
+"reload never ran" from "cache missed".
