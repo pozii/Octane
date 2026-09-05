@@ -55,7 +55,6 @@ in spam scenarios, near-zero in normal play.
 | 0.2.0-beta.4 | TNT + particle spam, near field | ~800–875k of ~1.1–1.2M seen (~70–74%) | 4–5 of ~600–1800 seen | aliveMax ~16–17k (past vanilla's 16384 cap: overflow valve engaged as designed); sounds mostly near, correctly passed; FPS never dipped, no missing cues reported |
 
 ## R1 model-parse cache (0.3.0-beta.1, texture-pack switching)
-
 Method: switch texture packs / F3+T repeatedly, then `/octane report`.
 Measured 2026-09-05, real modded game.
 
@@ -67,6 +66,18 @@ Measured 2026-09-05, real modded game.
 | sounds culled | 4 | distant sounds trimmed, near untouched |
 | tick p50 / p95 | 5.65 / 9.65 ms | healthiest run yet |
 | feel | texture-pack switching noticeably faster, world creation slightly faster | user-reported |
+
+## R1b blockstate cache + time-to-title baseline (0.3.0, real game)
+
+Method: cold boot, F3+T twice, `/octane report`. Measured 2026-09-05.
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| `blockstate-parse` runs / hits | 3 / 2 | 0.005 ms per hit, blocks render fine |
+| `model-parse` runs / hits | 3 / 2 | still holding |
+| `timeToTitleMs` | 3882 ms | first boot baseline (i5-12450H, SSD) |
+| tick p50 / p95 | 5.25 / 9.84 ms | healthiest run yet |
+| sounds culled | 5 distant of 31 seen | near sounds untouched |
 
 ## Real-machine run (modded 1.20.1, 2026-09-04, beta.3)
 
