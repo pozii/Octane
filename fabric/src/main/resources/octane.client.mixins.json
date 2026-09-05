@@ -10,7 +10,8 @@
     "ModelParseCacheMixin",
     "ParticleGovernorMixin",
     "SoundGovernorMixin",
-    "SplashTextCacheMixin"
+    "SplashTextCacheMixin",
+    "TitleScreenMarkerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

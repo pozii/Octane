@@ -17,6 +17,7 @@ public final class OctaneProfiler {
 
     private static volatile long gameStartNanos = -1;
     private static volatile long clientInitNanos = -1;
+    private static volatile long titleNanos = -1;
 
     private static final long[] tickNanos = new long[TICK_WINDOW];
     private static int tickCount;
@@ -48,6 +49,13 @@ public final class OctaneProfiler {
     public static void markClientInit() {
         if (clientInitNanos < 0) {
             clientInitNanos = System.nanoTime();
+        }
+    }
+
+    /** First title screen: closest marker to interactive, used for boot timing. */
+    public static void markTitleScreen() {
+        if (titleNanos < 0) {
+            titleNanos = System.nanoTime();
         }
     }
 
@@ -145,6 +153,9 @@ public final class OctaneProfiler {
         root.addProperty("loader", loaderName);
         root.addProperty("millisSinceGameStart", millisSinceGameStart());
         root.addProperty("clientInitReached", clientInitNanos >= 0);
+        if (titleNanos >= 0 && gameStartNanos >= 0) {
+            root.addProperty("timeToTitleMs", (titleNanos - gameStartNanos) / 1_000_000.0);
+        }
         root.addProperty("serverTicksObserved", count);
 
         if (count > 0) {

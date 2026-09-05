@@ -36,6 +36,10 @@ public abstract class ModelParseCacheMixin {
     private static Map<Identifier, JsonUnbakedModel> octane$cachedModels;
     @Unique
     private static String octane$cachedKey;
+    @Unique
+    private static Map<Identifier, ?> octane$cachedBlockStates;
+    @Unique
+    private static String octane$cachedBlockStateKey;
 
     @Inject(
         method = "reloadModels(Lnet/minecraft/resource/ResourceManager;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
@@ -80,6 +84,55 @@ public abstract class ModelParseCacheMixin {
                 octane$cachedKey = key;
             }
             OctaneProfiler.recordReloadSample("model-parse",
+                    (System.nanoTime() - start) / 1_000_000.0, false);
+            return models;
+        }));
+    }
+
+    @Inject(
+        method = "reloadBlockStates(Lnet/minecraft/resource/ResourceManager;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private static void octane$reuseBlockStates(ResourceManager manager, Executor executor,
+            CallbackInfoReturnable<CompletableFuture> cir) {
+        if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.skipRedundantBake) {
+            return;
+        }
+        long start = System.nanoTime();
+        String key = ReloadPackKeys.packKey();
+        synchronized (octane$LOCK) {
+            if (key != null && key.equals(octane$cachedBlockStateKey) && octane$cachedBlockStates != null) {
+                OctaneProfiler.recordReloadSample("blockstate-parse",
+                        (System.nanoTime() - start) / 1_000_000.0, true);
+                cir.setReturnValue(CompletableFuture.completedFuture(octane$cachedBlockStates));
+            }
+        }
+    }
+
+    @Inject(
+        method = "reloadBlockStates(Lnet/minecraft/resource/ResourceManager;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;",
+        at = @At("TAIL"),
+        cancellable = true
+    )
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void octane$storeBlockStates(ResourceManager manager, Executor executor,
+            CallbackInfoReturnable<CompletableFuture> cir) {
+        if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.skipRedundantBake) {
+            return;
+        }
+        String key = ReloadPackKeys.packKey();
+        if (key == null) {
+            return;
+        }
+        long start = System.nanoTime();
+        CompletableFuture original = cir.getReturnValue();
+        cir.setReturnValue(original.thenApply(models -> {
+            synchronized (octane$LOCK) {
+                octane$cachedBlockStates = (Map<Identifier, ?>) models;
+                octane$cachedBlockStateKey = key;
+            }
+            OctaneProfiler.recordReloadSample("blockstate-parse",
                     (System.nanoTime() - start) / 1_000_000.0, false);
             return models;
         }));

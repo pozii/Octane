@@ -6,8 +6,9 @@ Octane is a lightweight optimization core for Minecraft. Drop it into your
 mods folder — no setup, no config, no gameplay changes. It works *with*
 Sodium and Lithium, not against them.
 
-> **Beta:** 0.1.0-beta.1 ships the measurement foundation. Real boot and
-> memory optimizations land step by step, each with published benchmarks.
+> **0.3.0:** reload caches, particle/sound governors and a built-in
+> performance report. Real boot and memory optimizations land step by step,
+> each with published benchmarks.
 
 ## Why Octane
 

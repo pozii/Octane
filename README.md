@@ -9,9 +9,9 @@ Open-source Minecraft optimization core, licensed under
 **Apache-2.0**. Octane works *with* Sodium and Lithium, not against them:
 zero config, no gameplay changes — drop it into a modpack and forget it.
 
-> **Beta notice:** `0.1.0-beta.1` ships the measurement foundation (config,
-> profiler, `/octane report`, first mixins). Real Boot/RAM optimizations land
-> incrementally per `docs/BENCHMARKS.md` so every claim stays provable.
+> **0.3.0:** reload caches (recipes, splashes, models, blockstates),
+> client particle/sound governors, boot profiler with `/octane report`.
+> Every claim is measured per `docs/BENCHMARKS.md`.
 
 ## Why Octane
 
