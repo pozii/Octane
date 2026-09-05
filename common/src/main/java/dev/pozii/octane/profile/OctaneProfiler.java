@@ -37,6 +37,10 @@ public final class OctaneProfiler {
     private static long soundsSeen;
     private static long particlesAliveMax;
 
+    private static long reloadCount;
+    private static double firstReloadMs = -1;
+    private static double lastReloadMs = -1;
+
     private OctaneProfiler() {
     }
 
@@ -137,6 +141,15 @@ public final class OctaneProfiler {
         }
     }
 
+    /** Records one completed client resource reload (boot or F3+T). */
+    public static synchronized void recordReloadComplete(double millis) {
+        reloadCount++;
+        lastReloadMs = millis;
+        if (firstReloadMs < 0) {
+            firstReloadMs = millis;
+        }
+    }
+
     /** Builds the report payload for {@code /octane report}. Pure data, no I/O. */
     public static String buildReport(String minecraftVersion, String loaderName,
             dev.pozii.octane.config.OctaneConfig config) {        long[] snapshot;
@@ -195,13 +208,18 @@ public final class OctaneProfiler {
         }
         root.add("config", effective);
 
-        JsonObject governors = new JsonObject();
-        governors.addProperty("particlesCulled", particlesCulled);
+        JsonObject governors = new JsonObject();        governors.addProperty("particlesCulled", particlesCulled);
         governors.addProperty("soundsCulled", soundsCulled);
         governors.addProperty("particlesSeen", particlesSeen);
         governors.addProperty("soundsSeen", soundsSeen);
         governors.addProperty("particlesAliveMax", particlesAliveMax);
         root.add("governors", governors);
+
+        JsonObject boot = new JsonObject();
+        boot.addProperty("reloadCount", reloadCount);
+        boot.addProperty("firstReloadMs", firstReloadMs);
+        boot.addProperty("lastReloadMs", lastReloadMs);
+        root.add("boot", boot);
 
         Runtime runtime = Runtime.getRuntime();
         JsonObject memory = new JsonObject();

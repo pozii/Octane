@@ -9,6 +9,7 @@
     "MissingSoundSilencerMixin",
     "ModelParseCacheMixin",
     "ParticleGovernorMixin",
+    "ReloadTimingMixin",
     "SoundGovernorMixin",
     "SplashTextCacheMixin",
     "TitleScreenMarkerMixin"
