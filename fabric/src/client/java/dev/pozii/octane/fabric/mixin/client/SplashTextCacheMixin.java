@@ -1,8 +1,8 @@
 package dev.pozii.octane.fabric.mixin.client;
 
 import dev.pozii.octane.fabric.OctaneFabricMod;
+import dev.pozii.octane.fabric.client.ReloadPackKeys;
 import dev.pozii.octane.profile.OctaneProfiler;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,17 +32,6 @@ public abstract class SplashTextCacheMixin {
     @Unique
     private static String octane$cachedKey;
 
-    @Unique
-    private static String octane$packKey() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) {
-            return null;
-        }
-        List<String> names = new ArrayList<>(client.getResourcePackManager().getEnabledNames());
-        names.sort(null);
-        return String.join("|", names);
-    }
-
     @Inject(
         method = "prepare(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)Ljava/util/List;",
         at = @At("HEAD"),
@@ -55,7 +43,7 @@ public abstract class SplashTextCacheMixin {
             return;
         }
         long start = System.nanoTime();
-        String key = octane$packKey();
+        String key = ReloadPackKeys.packKey();
         if (key != null && key.equals(octane$cachedKey) && octane$cachedSplashes != null) {
             // Vanilla apply() copies out of the returned list (clear + addAll),
             // so handing back the cached instance is allocation-free and safe.
@@ -74,7 +62,7 @@ public abstract class SplashTextCacheMixin {
         if (OctaneFabricMod.config() == null || !OctaneFabricMod.config().boot.cacheSplashes) {
             return;
         }
-        String key = octane$packKey();
+        String key = ReloadPackKeys.packKey();
         if (key != null) {
             octane$cachedSplashes = List.copyOf(prepared);
             octane$cachedKey = key;
