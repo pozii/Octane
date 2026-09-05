@@ -11,14 +11,20 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Times every client resource reload (boot, F3+T, pack changes) by wrapping
- * the returned future. The first completion is the initial game load; later
- * ones are manual reloads. Feeds the {@code boot} section of
- * {@code /octane report}. No behavior change — a timestamp on completion.
+ * the returned future. Both entry points are covered: {@code reloadResources}
+ * (manual reloads) and {@code reloadResourcesConcurrently} (game boot, which
+ * never passes through the former — verified in bytecode). The first
+ * completion is the initial game load; later ones are manual reloads. Feeds
+ * the {@code boot} section of {@code /octane report}. No behavior change —
+ * a timestamp on completion.
  */
 @Mixin(MinecraftClient.class)
 public abstract class ReloadTimingMixin {
     @Inject(
-        method = "reloadResources()Ljava/util/concurrent/CompletableFuture;",
+        method = {
+            "reloadResources()Ljava/util/concurrent/CompletableFuture;",
+            "reloadResourcesConcurrently()Ljava/util/concurrent/CompletableFuture;"
+        },
         at = @At("TAIL"),
         cancellable = true
     )
