@@ -53,6 +53,7 @@ in spam scenarios, near-zero in normal play.
 | Build | Area | particlesCulled | soundsCulled | Notes |
 |-------|------|-----------------|--------------|-------|
 | 0.2.0-beta.1 | — | — | — | pending in-game test |
+| 0.2.0-beta.4 | TNT + particle spam, near field | ~800–875k of ~1.1–1.2M seen (~70–74%) | 4–5 of ~600–1800 seen | aliveMax ~16–17k (past vanilla's 16384 cap: overflow valve engaged as designed); sounds mostly near, correctly passed; FPS never dipped, no missing cues reported |
 
 ## Real-machine run (modded 1.20.1, 2026-09-04, beta.3)
 
