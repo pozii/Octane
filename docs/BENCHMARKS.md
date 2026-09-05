@@ -42,7 +42,6 @@ M1 splash cache skips one file open + ~500-line parse per reload; below
 wall-clock noise on vanilla, validated as reload-cache harness instead.
 
 ## In-game governors (0.2.0-beta.1, client)
-
 Method: busy area (mob farm / boss arena / TNT), play 5 minutes with the
 governor on, then `/octane report` and read `governors.particlesCulled` and
 `governors.soundsCulled`. Compare 1% lows subjectively + tick p95. Then set
@@ -54,6 +53,20 @@ in spam scenarios, near-zero in normal play.
 |-------|------|-----------------|--------------|-------|
 | 0.2.0-beta.1 | — | — | — | pending in-game test |
 | 0.2.0-beta.4 | TNT + particle spam, near field | ~800–875k of ~1.1–1.2M seen (~70–74%) | 4–5 of ~600–1800 seen | aliveMax ~16–17k (past vanilla's 16384 cap: overflow valve engaged as designed); sounds mostly near, correctly passed; FPS never dipped, no missing cues reported |
+
+## R1 model-parse cache (0.3.0-beta.1, texture-pack switching)
+
+Method: switch texture packs / F3+T repeatedly, then `/octane report`.
+Measured 2026-09-05, real modded game.
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| `model-parse` runs / cacheHits | 4 / 3 | parse skipped on unchanged packs |
+| `model-parse` lastMs (hit) | 0.02 ms | effectively free vs full re-parse |
+| splash hits | 3 / 7 runs | M1 keeps working |
+| sounds culled | 4 | distant sounds trimmed, near untouched |
+| tick p50 / p95 | 5.65 / 9.65 ms | healthiest run yet |
+| feel | texture-pack switching noticeably faster, world creation slightly faster | user-reported |
 
 ## Real-machine run (modded 1.20.1, 2026-09-04, beta.3)
 
