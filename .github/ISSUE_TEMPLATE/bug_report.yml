@@ -21,7 +21,7 @@ body:
     id: versions
     attributes:
       label: Octane and Minecraft version
-      placeholder: Octane 0.3.1, Minecraft 1.20.1, Fabric Loader 0.16
+      placeholder: Octane 0.4.0, Minecraft 1.20.1, Fabric Loader 0.16
     validations:
       required: true
   - type: textarea
