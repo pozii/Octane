@@ -4,15 +4,20 @@
   "package": "dev.pozii.octane.fabric.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "refmap": "client-octane-refmap.json",
+  "plugin": "dev.pozii.octane.fabric.mixin.client.OctaneMixinPlugin",
   "client": [
+    "EntityCullMixin",
     "MinecraftClientBootMixin",
     "MissingSoundSilencerMixin",
     "ModelParseCacheMixin",
+    "NameTagCullMixin",
     "ParticleGovernorMixin",
     "ReloadTimingMixin",
+    "SodiumOptionsMixin",
     "SoundGovernorMixin",
     "SplashTextCacheMixin",
-    "TitleScreenMarkerMixin"
+    "TitleScreenMarkerMixin",
+    "WeatherThinningMixin"
   ],
   "injectors": {
     "defaultRequire": 1

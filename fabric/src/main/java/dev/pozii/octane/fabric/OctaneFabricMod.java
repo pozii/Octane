@@ -15,22 +15,22 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 
-/** Server + client common entrypoint. No behavior changes, only measurement. */
 public final class OctaneFabricMod implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(Octane.MOD_NAME);
 
     private static final FabricPlatformHelper PLATFORM = new FabricPlatformHelper();
     private static final VersionAdapter ADAPTER = new VersionAdapters1_20_1();
     private static OctaneConfig config;
+    private static Path configFile;
 
     @Override
     public void onInitialize() {
         OctaneAPI.fire(OctaneAPI.Phase.PRE_INIT);
         OctaneProfiler.markGameStart();
 
-        Path file = PLATFORM.configDir().resolve(Octane.MOD_ID + ".json");
-        config = OctaneConfig.load(file);
-        config.save(file);
+        configFile = PLATFORM.configDir().resolve(Octane.MOD_ID + ".json");
+        config = OctaneConfig.load(configFile);
+        config.save(configFile);
 
         OctaneCommands.register();
 
@@ -41,6 +41,10 @@ public final class OctaneFabricMod implements ModInitializer {
 
     public static OctaneConfig config() {
         return config;
+    }
+
+    public static Path configFile() {
+        return configFile;
     }
 
     public static PlatformHelper platform() {

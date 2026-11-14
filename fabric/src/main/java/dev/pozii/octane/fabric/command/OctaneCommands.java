@@ -6,16 +6,16 @@ import dev.pozii.octane.profile.OctaneProfiler;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Registers {@code /octane report}. All user-facing strings are translatable
- * keys (see {@code assets/octane/lang/en_us.json}); no hardcoded English here.
- */
 public final class OctaneCommands {
     private OctaneCommands() {
     }
@@ -39,12 +39,26 @@ public final class OctaneCommands {
                     Path out = OctaneFabricMod.platform().gameDir().resolve("octane-report.json");
                     try {
                         Files.writeString(out, json, StandardCharsets.UTF_8);
-                        source.sendFeedback(() -> Text.translatable("octane.command.report.done"), false);
+                        source.sendFeedback(() -> savedMessage(out), false);
                     } catch (Exception e) {
                         OctaneFabricMod.LOGGER.warn("[Octane] could not write report", e);
-                        source.sendFeedback(() -> Text.translatable("octane.command.report.failed"), false);
+                        source.sendFeedback(() -> Text.translatable("octane.command.report.failed")
+                                .formatted(Formatting.RED), false);
                     }
                     return 1;
                 })));
+    }
+
+    private static Text savedMessage(Path file) {
+        MutableText link = Text.literal(file.getFileName().toString())
+                .styled(style -> style
+                        .withColor(Formatting.AQUA)
+                        .withUnderline(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.toAbsolutePath().toString()))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                Text.translatable("octane.command.report.hover").formatted(Formatting.GRAY))));
+        MutableText prefix = Text.literal("[Octane] ").formatted(Formatting.GOLD, Formatting.BOLD);
+        MutableText body = Text.translatable("octane.command.report.done", link).formatted(Formatting.GREEN);
+        return prefix.append(body);
     }
 }

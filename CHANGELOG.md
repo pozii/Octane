@@ -10,3 +10,6 @@ subjects clean. The compatibility and benchmark matrix lives in
 
 - CI + autonomous releases (GitHub + Modrinth beta channel).
 - Mod Menu icon wiring (pending `icon.png`).
+- Sodium video settings now carry an Octane page with 14 live toggles and sliders. Boot options flag a restart.
+- New options: entity draw distance, name tag distance, and thinner rain splashes.
+- `/octane report` prints in color, and clicking the file name opens it.
