@@ -10,3 +10,7 @@ out/
 .vscode/*
 !.vscode/settings.json
 .DS_Store
+.mcp.json
+AGENTS.md
+/assets/
+/docs/MODRINTH.md

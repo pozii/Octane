@@ -1,43 +1,47 @@
-![Octane — High-octane performance for your modpack.](assets/octane-banner.png)
+<div align="center">
+  <img src="https://i.ibb.co/WNFh76qx/Octane-Texted.png" alt="Octane" width="420">
+  <h3>High-octane performance for your Client.</h3>
+  <p>
+    <a href="https://modrinth.com/mod/octane"><img src="https://img.shields.io/badge/get%20it-Modrinth-1bd96a.svg" alt="Modrinth"></a>
+  </p>
+</div>
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Minecraft](https://img.shields.io/badge/minecraft-1.20.1-green.svg)](https://minecraft.net)
-[![Loader](https://img.shields.io/badge/loader-Fabric%20%C2%B7%200.16-yellow.svg)](https://fabricmc.net)
-[![Status](https://img.shields.io/badge/status-beta-orange.svg)](docs/BENCHMARKS.md)
+Octane is an open-source Minecraft client optimizer under **Apache-2.0**. I built
+it to run fine on its own, and it also plays nicely next to Sodium and Lithium
+instead of fighting them. There's no config to touch and gameplay stays exactly
+the same. Drop it in your mods folder and forget it's there.
 
-Open-source Minecraft optimization core, licensed under
-**Apache-2.0**. Octane works *with* Sodium and Lithium, not against them:
-zero config, no gameplay changes — drop it into a modpack and forget it.
-
-> **0.3.0:** reload caches (recipes, splashes, models, blockstates),
-> client particle/sound governors, boot profiler with `/octane report`.
-> Every claim is measured per `docs/BENCHMARKS.md`.
+> Reload caches for recipes, splashes, models and blockstates, client
+> particle and sound governors, and a boot profiler behind `/octane report`.
+> Every claim is measured. See `docs/BENCHMARKS.md`.
 
 ## Why Octane
 
-- **Mandatory-material:** dependency-light, client + server safe, compatible
-  with the Sodium/Lithium/FerriteCore stack.
-- **Zero config:** everything defaults to ON; `config/octane.json` exists for
-  pack authors who want toggles.
-- **Provable:** `/octane report` writes `octane-report.json` with boot markers
-  and recent server tick stats (p50/p95/max + heap).
-- **Modpack API:** companions can observe boot via `OctaneAPI`
-  (`dev.pozii.octane.api`) without touching mixins.
+- **Standalone:** all it asks for is Fabric API. The client gets faster even if
+  no other optimization mod is installed.
+- **Stacks well:** Sodium, Lithium and FerriteCore can sit beside it, and I've
+  hit no conflicts so far.
+- **Zero config:** everything starts ON. `config/octane.json` is there for
+  players and pack authors who'd like some toggles.
+- **Provable:** run `/octane report` and you get an `octane-report.json` with
+  boot markers and recent server tick stats (p50/p95/max plus heap).
+- **Modpack API:** companion mods can watch the boot through `OctaneAPI`
+  (`dev.pozii.octane.api`), no mixins required.
 
-## Install (players & pack authors)
+## Install
 
-1. Install [Fabric Loader](https://fabricmc.net) `>= 0.16` for Minecraft 1.20.1
-   plus [Fabric API](https://modrinth.com/mod/fabric-api).
-2. Drop `octane-*.jar` into `mods/`. No setup needed.
+1. Get [Fabric Loader](https://fabricmc.net) `>= 0.16` for Minecraft 1.20.1,
+   then add [Fabric API](https://modrinth.com/mod/fabric-api).
+2. Put `octane-*.jar` into `mods/`. That's the whole setup.
 
 ## Commands
 
-`/octane report` (permission level 2) — writes `octane-report.json` into the
-game directory and confirms with a translatable chat message.
+`/octane report` (permission level 2) writes `octane-report.json` into the
+game directory, then tells you so with a translatable chat message.
 
 ## Config
 
-`config/octane.json` (auto-created with safe defaults):
+`config/octane.json` gets created on first launch with safe defaults:
 
 ```jsonc
 {
@@ -56,31 +60,16 @@ game directory and confirms with a translatable chat message.
 
 ## Building
 
-Requirements: JDK 17.
+You need JDK 17.
 
 ```sh
 ./gradlew :fabric:build
 ```
 
-The jar lands in `fabric/build/libs/`.
+The finished jar ends up in `fabric/build/libs/`.
 
-## Layout
+## AI policy
 
-```text
-common/          pure Java: config, profiler, OctaneAPI, platform/version interfaces
-fabric/          Fabric 1.20.1: entrypoints, command, mixins, en_us lang
-neoforge-stub/   reserved for the v2.0 NeoForge port
-forge-stub/      reserved for a possible Forge port
-versions/        per-Minecraft-version adapters (1.20.1 active, 1.21.x skeleton)
-docs/            benchmark protocol and run tables
-```
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) first — especially the
-architecture rules (`:common` stays pure Java, no hardcoded strings, strict
-mixins, benchmarks required for perf claims).
-
-## License
-
-[Apache-2.0](LICENSE).
+Humans build Octane, and we're against AI in this project. Code, art and text
+written by AI don't get accepted, and we'd rather not see them in issues or pull
+requests either. Contributing? Write it yourself.
