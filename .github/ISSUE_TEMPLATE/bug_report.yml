@@ -1,0 +1,31 @@
+name: Bug report
+description: Something crashed, broke, or behaves differently with Octane installed.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: input
+    id: log
+    attributes:
+      label: Log or crash report
+      description: Upload your latest.log or crash report at https://minelog.org and paste the link here. It hides private data in your browser before upload.
+      placeholder: https://minelog.org/...
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Octane and Minecraft version
+      placeholder: Octane 0.3.1, Minecraft 1.20.1, Fabric Loader 0.16
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Optional, but it speeds things up.

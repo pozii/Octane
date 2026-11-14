@@ -1,0 +1,15 @@
+name: minelog
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  read-log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: LogicByteORG/minelog-action@v1
